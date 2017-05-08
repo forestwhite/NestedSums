@@ -2,13 +2,21 @@
  * The nestedsums package collects summation methods for large nested series
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
+ * 
+ * In general, quantum probabilities and quasi-probability values are near 0 and 
+ * 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represent a performance bottleneck if applied arbitrarily.  
  */
 package nestedsums;
 
 /**
- * Calculations for Q coefficient generated and refenced repeatedly in the final
- * calculation Q-tilda: two dependent indeces, time independent = one 2D table
- * of all possible terms given 2 indices
+ * Calculations for Q coefficient generated and referenced repeatedly in the
+ * final calculation Q-tilda: two dependent indeces, time independent = one 2D
+ * table of all possible terms given 2 indices
+ * 
+ * In gen
  *
  * @author forest
  */
