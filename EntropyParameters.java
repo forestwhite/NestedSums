@@ -2,6 +2,12 @@
  * The nestedsums package collects summation methods for large nested series
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
+ * 
+ * In general, quantum probabilities and quasi-probability values are near 0 and 
+ * 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represents a performance bottleneck if applied arbitrarily.  
  */
 package nestedsums;
 
@@ -57,15 +63,22 @@ public class EntropyParameters{
     }
     
     /**
-     * Calculates Stirling's approximation for n!:
-     *      sqrt(2pi*n)*(n^n)*e^(-n)
-     * @param  n, the integer to find the factorial of.
-     * @return  double
-     */
+     * Calculates factorial precisely or as an approximation for n!
+     * Limited to factorials of 142 or smaller; 143! results in infinity for a 
+     * 64-bit (double/long) result
+     * TODO: Make return type Number so that BigDecimal/BigInteger results are 
+     * possible
+     * TODO: Create a singleton table of factorial values that can be referenced
+     * repeatedly instead of calculating each when needed.
+     * @param   n   the integer to find the factorial of.
+     * @return  double  double precision result
+    
     public static double stirling(int n) {
-        double factorial = 1.0;
+        if(n < 0)
+            return Double.NaN;
         if(n <= 20) {
             // calculate the factorial without approximation
+            double factorial = 1.0;
             for(int i = 1; i <= n; i++){
                  factorial*=i;
             }
@@ -73,4 +86,5 @@ public class EntropyParameters{
         }
         return ROOT2PI*Math.pow((double)n,(double)n+0.5)/Math.exp((double)n);
     }
+    * */
 }

@@ -2,6 +2,12 @@
  * The nestedsums package collects summation methods for large nested series
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
+ * 
+ * In general, quantum probabilities and quasi-probability values are near 0 and 
+ * 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represents a performance bottleneck if applied arbitrarily.  
  */
 package nestedsums;
 
@@ -22,6 +28,10 @@ public class N_0 implements Sequence {
 
     /**
      * "raw" N_0 constructor 
+     * @param time
+     * @param max
+     * @param qt
+     * @param ct
      */
     public N_0(double time, int max, Q_ab qt, C_0 ct) {
         this.time = time;
@@ -32,6 +42,8 @@ public class N_0 implements Sequence {
 
     /**
      * Encapsulated N_0 coefficient constructor
+     * @param time
+     * @param ep
      */
     public N_0(double time, EntropyParameters ep) {
         this.time = time;
@@ -39,7 +51,7 @@ public class N_0 implements Sequence {
         if (this.max < 16) {
             this.max = 16;
         }
-        this.qt = new Q_ab(ep);
+        this.qt = Q_ab.getInstance(ep);
         this.ct = new C_0(time, ep);
     }
 

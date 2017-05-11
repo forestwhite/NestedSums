@@ -2,6 +2,12 @@
  * The nestedsums package collects summation methods for large nested series
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
+ * 
+ * In general, quantum probabilities and quasi-probability values are between 0 
+ * and 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represents a performance bottleneck if applied arbitrarily.  
  */
 package nestedsums;
 
@@ -27,9 +33,13 @@ public class NestedSums {
 
     public static void main(String[] args) throws IOException {
         //Entropy field parameters: {delta, g12, g23, alpha1sq, alpha2sq, detectedstate}
-        double[] params = {0.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+        double[] params = {0.0, 1.0, 1.0, 4.0, 4.0, 0.0};
         EntropyParameters ep = new EntropyParameters(params);
-
+        System.out.println("Calculating Factorials...");
+        FactorialSingleton fs =FactorialSingleton.getInstance();
+        //fs.calculate(16); 
+        fs.calculate(ep.alpha1sq*ep.alpha2sq);
+        System.out.println("Factorials finished. e.g. " + ep.alpha1sq*ep.alpha2sq + "! = " + fs.factorial(ep.alpha1sq*ep.alpha2sq));
         HashMap<Double, LinearEntropy> emap = new HashMap<>();
         System.out.println("Calculating Linear Entropy for each increment 0.1 of scaled time");
         double temp;
@@ -43,14 +53,14 @@ public class NestedSums {
     }
 
     /**
-     * Creates a file containing the linear entopy calculations as a list for 
-     * state-reductive mesurement times in sequence.
+     * Creates a file containing the linear entropy calculations as a list for 
+     * state-reductive measurement times in sequence.
      * @param   ep  the entropy parameters of the system under investigation
      * @param   emap    the calculated linear entropy map with time(double) keys 
      */
     public static void writeLEDataFile(EntropyParameters ep, HashMap<Double, LinearEntropy> emap) throws IOException {
         FileWriter fw = new FileWriter("lentropy_fieldA_nbar" + ep.alpha1sq
-                + "-" + ep.alpha1sq + "_0detected.txt");
+                + "-" + ep.alpha2sq + "_0detected.txt");
         PrintWriter w = new PrintWriter(new BufferedWriter(fw));
         for (int t = 0; t < 300; t++) {
             w.println((double) t / 10.0 + " " + emap.get((double) t / 10.0).calculate());
