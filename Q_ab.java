@@ -3,11 +3,19 @@
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
  * 
+<<<<<<< HEAD
  * In general, quantum probabilities and quasi-probability values are between 0 
  * and 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
  * represents a performance bottleneck if applied arbitrarily.  
+=======
+ * In general, quantum probabilities and quasi-probability values are near 0 and 
+ * 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represent a performance bottleneck if applied arbitrarily.  
+>>>>>>> origin/master
  */
 package nestedsums;
 
@@ -21,6 +29,7 @@ import static nestedsums.FactorialSingleton.TWO;
  * final calculation Q-tilda: two dependent indeces, time independent = one 2D
  * table of all possible terms given 2 indices
  * 
+<<<<<<< HEAD
  * Q_ab coefficients are not time dependant, so should be calculated once and 
  * repeatedly referenced. Q_ab values depend on a custom square-root calculation 
  * of BigIntegers, which is a significant performance bottleneck for larger 
@@ -28,6 +37,9 @@ import static nestedsums.FactorialSingleton.TWO;
  * TODO: Check symmetry of Q_ab values to reduce the number of calculations
  * TODO: Calculate Q_ab values/square roots in parallel, because they do not 
  *       depend on each other.
+=======
+ * In gen
+>>>>>>> origin/master
  *
  * @author forest
  */

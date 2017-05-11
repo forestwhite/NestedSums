@@ -3,11 +3,19 @@
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
  * 
+<<<<<<< HEAD
  * In general, quantum probabilities and quasi-probability values are between 0 
  * and 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
  * represents a performance bottleneck if applied arbitrarily.  
+=======
+ * In general, quantum probabilities and quasi-probability values are near 0 and 
+ * 1, so double precision arithmetic is favored for speed with sufficient 
+ * accuracy - 4 or 5 significant figures in the worst case. Some calculations
+ * require very large number calculations in their constituent parts, which 
+ * represent a performance bottleneck if applied arbitrarily.  
+>>>>>>> origin/master
  */
 package nestedsums;
 
@@ -33,6 +41,7 @@ public class NestedSums {
 
     public static void main(String[] args) throws IOException {
         //Entropy field parameters: {delta, g12, g23, alpha1sq, alpha2sq, detectedstate}
+<<<<<<< HEAD
         double[] params = {0.0, 1.0, 1.0, 4.0, 4.0, 0.0};
         EntropyParameters ep = new EntropyParameters(params);
         System.out.println("Calculating Factorials...");
@@ -40,6 +49,12 @@ public class NestedSums {
         //fs.calculate(16); 
         fs.calculate(ep.alpha1sq*ep.alpha2sq);
         System.out.println("Factorials finished. e.g. " + ep.alpha1sq*ep.alpha2sq + "! = " + fs.factorial(ep.alpha1sq*ep.alpha2sq));
+=======
+        double[] params = {0.0, 1.0, 1.0, 25.0, 4.0, 0.0};
+        EntropyParameters ep = new EntropyParameters(params);
+        System.out.println(Math.pow(ep.stirling(125),2));
+/*
+>>>>>>> origin/master
         HashMap<Double, LinearEntropy> emap = new HashMap<>();
         System.out.println("Calculating Linear Entropy for each increment 0.1 of scaled time");
         double temp;
@@ -50,6 +65,7 @@ public class NestedSums {
             System.out.println();
         }
         writeLEDataFile(ep, emap);
+        */
     }
 
     /**

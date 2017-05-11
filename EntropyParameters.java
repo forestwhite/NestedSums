@@ -7,7 +7,11 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
+<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
+=======
+ * represent a performance bottleneck if applied arbitrarily.  
+>>>>>>> origin/master
  */
 package nestedsums;
 
@@ -72,7 +76,11 @@ public class EntropyParameters{
      * repeatedly instead of calculating each when needed.
      * @param   n   the integer to find the factorial of.
      * @return  double  double precision result
+<<<<<<< HEAD
     
+=======
+     */
+>>>>>>> origin/master
     public static double stirling(int n) {
         if(n < 0)
             return Double.NaN;
