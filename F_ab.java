@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -29,18 +25,18 @@ public class F_ab implements Sequence {
 
     double time; //time at which the state-reductive measurement is made
     int max; //the maximum number of terms in the series to calculate any value
-    B_ab bt; //B_ab sequence for the time (see above) examined
-    B_ab bt_cnj; //B_ab conjugate sequence for the time exmined
+    BSingleton bt; //B_ab sequence for the time (see above) examined
+    BSingleton bt_cnj; //B_ab conjugate sequence for the time examined
     double[][] terms; //the individual series terms, not the final value
 
     /**
      * "raw" F_ab constructor 
      */
-    public F_ab(double time, int max, B_ab bt, B_ab bt_cnj) {
+    public F_ab(double time, int max) {
         this.time = time; //scaled time of the state-reductive measurement
         this.max = max; //the number of summation terms to use
-        this.bt = bt; //B coefficient of the system
-        this.bt_cnj = bt_cnj; //conjugate B coefficient
+        this.bt = BSingleton.getInstance(); //B coefficient of the system
+        this.bt_cnj = this.bt;
     }
 
     /**
@@ -54,7 +50,8 @@ public class F_ab implements Sequence {
         if (this.max < 16) {
             this.max = 16;
         }
-        this.bt = new B_ab(time, ep);
+         terms = new double[max][max];
+        this.bt = BSingleton.getInstance();
         this.bt_cnj = this.bt;
     }
 
@@ -95,21 +92,22 @@ public class F_ab implements Sequence {
          */
         @Override
         public double getTerm(int[] indices) throws IndexOutOfBoundsException {
-            return bt.getTerm(new int[]{outerindices[0], indices[0]})
-                    * bt_cnj.getTerm(new int[]{outerindices[1], indices[0]});
+            int[] aindices = new int[]{outerindices[0], indices[0]};
+            int[] bindices = new int[]{outerindices[1], indices[0]};
+            return bt.getB(time, aindices)* bt_cnj.getB(time, bindices);
         }
     }
 
     /**
      * Fills in F_ab terms table of a given size.
      * This has linear efficiency for the number of terms to calculate.
-     * @param indices Coordinates for the final  cells of the 
+     * @param indices Coordinates for the upper left and lower rightcells of the 
      *                table/matrix that define the range of terms to calculate 
      */
     public void calculate(int[] indices) {
-        terms = new double[indices[0]][indices[1]];
-        for (int i = 0; i < indices[0]; i++) {
-            for (int j = 0; j < indices[1]; j++) {
+
+        for (int i = indices[0]; i < indices[2]; i++) {
+            for (int j = indices[1]; j < indices[3]; j++) {
                 terms[i][j] = getTerm(new int[]{i, j});
             }
         }

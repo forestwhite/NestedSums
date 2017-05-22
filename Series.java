@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -27,8 +23,8 @@ public class Series implements Sequence {
     private int max; //max number of terms to sum
     private int depth; //number of inner sums nested within this sum
     private int[] indices; //indices to track nested terms under evaluation, in 
-    // reverse order, meaning index of outermost sum is 
-    // last and index of innermost sum is first
+                           // reverse order, meaning index of outermost sum is 
+                           // last and index of innermost sum is first
     double value; //Result value for the series
 
     /**
@@ -72,8 +68,8 @@ public class Series implements Sequence {
     }
 
     /**
-     * @param indices Index numbers of the term in the series. The number of
-     * indeces indicates the level of summation nesting.
+     * @param indices   Index numbers of the term in the series. The number of
+     *                  indices indicates the level of summation nesting.
      * @return the value of the series term
      */
     @Override

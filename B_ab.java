@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -41,20 +37,6 @@ public class B_ab implements Sequence {
     N_0 nt; //N_0 sequence for the time (see above) examined
     double[][] terms;
 
-    /**
-     * "raw" B_ab constructor 
-     * @param time
-     * @param qt
-     * @param ct
-     * @param nt
-     */
-    public B_ab(double time, Q_ab qt, C_0 ct, N_0 nt) {
-        this.time = time;
-        this.qt = qt;
-        this.ct = ct;
-        this.nt = nt;
-    }
-
     /*
      * Encapsulated B coefficient constructor
      * @param time
@@ -62,9 +44,13 @@ public class B_ab implements Sequence {
      */
     public B_ab(double time, EntropyParameters ep) {
         this.time = time;
-        this.qt = Q_ab.getInstance(ep);
+        this.qt = Q_ab.getInstance();
         this.ct = new C_0(time, ep);
         this.nt = new N_0(time, ep);
+        if (ep.alpha2sq * ep.alpha1sq < 16)
+            terms = new double[16][16];
+        else
+            terms = new double[ep.alpha2sq * ep.alpha1sq ][ep.alpha2sq * ep.alpha1sq ];
     }
 
     /**
@@ -85,6 +71,17 @@ public class B_ab implements Sequence {
         }
         //if the term is not already calculated, calculate it
         return 1 / nt.calculate() * qt.getTerm(indices) * ct.getTerm(indices);
+    }
+
+    /*
+     * Calculates and populates the b coefficient table for assigned time
+     */
+    void calculate() {
+        for (int i = 0; i < terms.length; i++) {
+            for (int j = 0; j < terms[i].length; j++) {
+                terms[i][j] = getTerm(new int[]{i, j});
+            }
+        }
     }
 
 }

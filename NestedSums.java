@@ -3,19 +3,11 @@
  * to support the batch calculation of quantum electrodynamics model statistics,
  * such as linear entropy.
  * 
-<<<<<<< HEAD
  * In general, quantum probabilities and quasi-probability values are between 0 
  * and 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * In general, quantum probabilities and quasi-probability values are near 0 and 
- * 1, so double precision arithmetic is favored for speed with sufficient 
- * accuracy - 4 or 5 significant figures in the worst case. Some calculations
- * require very large number calculations in their constituent parts, which 
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -23,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 /**
@@ -40,32 +33,21 @@ import java.util.HashMap;
 public class NestedSums {
 
     public static void main(String[] args) throws IOException {
-        //Entropy field parameters: {delta, g12, g23, alpha1sq, alpha2sq, detectedstate}
-<<<<<<< HEAD
-        double[] params = {0.0, 1.0, 1.0, 4.0, 4.0, 0.0};
+        //Entropy field parameters: {delta, g12, g23, alpha1sq, alpha2sq, detectedstate, maxtime, interval}
+        double[] params = {0.0, 1.0, 1.0, 4.0, 4.0, 0.0, 30, 0.1};
         EntropyParameters ep = new EntropyParameters(params);
-        System.out.println("Calculating Factorials...");
-        FactorialSingleton fs =FactorialSingleton.getInstance();
-        //fs.calculate(16); 
-        fs.calculate(ep.alpha1sq*ep.alpha2sq);
-        System.out.println("Factorials finished. e.g. " + ep.alpha1sq*ep.alpha2sq + "! = " + fs.factorial(ep.alpha1sq*ep.alpha2sq));
-=======
-        double[] params = {0.0, 1.0, 1.0, 25.0, 4.0, 0.0};
-        EntropyParameters ep = new EntropyParameters(params);
-        System.out.println(Math.pow(ep.stirling(125),2));
-/*
->>>>>>> origin/master
+        BSingleton bs = BSingleton.getInstance();
+        bs.init(ep); //Build B coefficient table
         HashMap<Double, LinearEntropy> emap = new HashMap<>();
-        System.out.println("Calculating Linear Entropy for each increment 0.1 of scaled time");
+        System.out.println("Calculating Linear Entropy for each increment " + ep.interval + " of scaled time");
         double temp;
-        for (int t = 0; t < 300; t++) {
-            emap.put((double) t / 10.0, new LinearEntropy((double) t / 10.0, ep));
-            temp = emap.get((double) t / 10.0).calculate();
-            System.out.printf("%-3s %20s", (double) t / 10.0, temp);
+        for (int t = 0; t < ep.maxtime/ep.interval; t++) {
+            emap.put(t * ep.interval, new LinearEntropy(t * ep.interval, ep));
+            temp = emap.get(t * ep.interval).calculate();
+            System.out.printf("%-3s %20s", round(t * ep.interval,1), temp);
             System.out.println();
         }
         writeLEDataFile(ep, emap);
-        */
     }
 
     /**
@@ -76,11 +58,16 @@ public class NestedSums {
      */
     public static void writeLEDataFile(EntropyParameters ep, HashMap<Double, LinearEntropy> emap) throws IOException {
         FileWriter fw = new FileWriter("lentropy_fieldA_nbar" + ep.alpha1sq
-                + "-" + ep.alpha2sq + "_0detected.txt");
+                + "-" + ep.alpha2sq + "_0detected" + LocalTime.now().toString().replace(":","") + ".txt");
         PrintWriter w = new PrintWriter(new BufferedWriter(fw));
-        for (int t = 0; t < 300; t++) {
-            w.println((double) t / 10.0 + " " + emap.get((double) t / 10.0).calculate());
+        for (int t = 0; t < ep.maxtime/ep.interval; t++) {
+            w.println((double) t * ep.interval + " " + emap.get((double) t * ep.interval).calculate());
         }
         w.close();
+    }
+    
+    public static double round (double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 }

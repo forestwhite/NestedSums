@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -48,6 +44,8 @@ public class EntropyParameters{
     int alpha2sq; //average initial photons in field 1
     double alpha2; //root of the avearage initial photons in field 2
     int detectedstate; //the detected state of the atom
+    int maxtime = 10; //range of time for calculations
+    double interval= 0.1; //time interval of calculations
     
     /**
      * Entropy parameters for a two-mode coherent light cavity interacting with 
@@ -64,35 +62,7 @@ public class EntropyParameters{
         this.alpha2sq = (int)SharedParams[4];
         this.alpha2 = Math.sqrt(alpha2sq);
         this.detectedstate = (int)SharedParams[5];
+        this.maxtime = (int)SharedParams[6];
+        this.interval = SharedParams[7];
     }
-    
-    /**
-     * Calculates factorial precisely or as an approximation for n!
-     * Limited to factorials of 142 or smaller; 143! results in infinity for a 
-     * 64-bit (double/long) result
-     * TODO: Make return type Number so that BigDecimal/BigInteger results are 
-     * possible
-     * TODO: Create a singleton table of factorial values that can be referenced
-     * repeatedly instead of calculating each when needed.
-     * @param   n   the integer to find the factorial of.
-     * @return  double  double precision result
-<<<<<<< HEAD
-    
-=======
-     */
->>>>>>> origin/master
-    public static double stirling(int n) {
-        if(n < 0)
-            return Double.NaN;
-        if(n <= 20) {
-            // calculate the factorial without approximation
-            double factorial = 1.0;
-            for(int i = 1; i <= n; i++){
-                 factorial*=i;
-            }
-            return factorial;
-        }
-        return ROOT2PI*Math.pow((double)n,(double)n+0.5)/Math.exp((double)n);
-    }
-    * */
 }

@@ -7,13 +7,11 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
+
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Class defining the product of F_ab terms with one common index
@@ -64,7 +62,8 @@ class TrRoSquared implements Sequence {
 
     /**
      * Fills in Trace of Ro_Squared terms table of a given size.
-     * This has linear efficiency based on the number of terms calculated, max.
+     * This function grows as O(n^2) for max n terms, so a ConcurrentSeries 
+     * calculates the sum in parallel if processors are available.
      */
     public double calculate() {
         for (int i = 0; i < max; i++) {
@@ -72,7 +71,10 @@ class TrRoSquared implements Sequence {
                 terms[i][j] = this.getTerm(new int[]{i, j});
             }
         }
-        Series sum = new Series(this, max, 2);
-        return sum.calculate();
+        int[] indices = {0,0,max,max};
+        ConcurrentSeries sum = new ConcurrentSeries(this, indices);
+        ForkJoinPool pool = new ForkJoinPool();
+        pool.invoke(sum);
+        return sum.value;
     }
 }
