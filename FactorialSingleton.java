@@ -11,26 +11,21 @@
  */
 package nestedsums;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.util.HashMap;
 
 /**
- * The singleton class calculates factorial approximations once for factorials.
+ * The singleton class calculates factorials once for reference.
  * The efficiencies are cumulative to retain high accuracy, and for linear 
- * entropy, all factorial values for a given range are used, so all factorials
- * are calculated cumulatively. However, no factorial is calculated more than 
- * once and the singleton can be referenced repeatedly with the efficiency 
- * of the HashTable storing the values.
+ * entropy, all getFactorial values for a given range are used, so all 
+ * factorials  are calculated cumulatively. The singleton can be referenced 
+ * repeatedly with the lookup efficiency of the HashTable storing the values.
  */
 public class FactorialSingleton {
     //Eagerly create the FactorialSingleton object when the class is loaded so
     //access does not need to be synchronized.
     private static final FactorialSingleton uniqueInstance = new FactorialSingleton();
     static HashMap<Integer,BigInteger> cache = new HashMap<>();
-    final static MathContext mc = new MathContext(1000);
-    final static BigDecimal TWO = new BigDecimal(2, mc);
     
     private FactorialSingleton() {
     }
@@ -41,26 +36,32 @@ public class FactorialSingleton {
     }
     
     /**
-     * Returns factorial precisely if cached.
-     * @param   n   the integer to find the factorial of.
+     * Returns getFactorial precisely if cached.
+     * @param   n   the integer to find the getFactorial of.
      * @return  BigInteger  BigInteger result
      */
-    public BigInteger factorial(int n) {
+    public BigInteger getFactorial(int n) {
         if(cache.containsKey(n))
             return cache.get(n);
         else
             return null; //TODO: calculate Stirling's approximation (Bauer)
+                         //      or init to new larger range
     }
     
     /*
-     * Calculates and populates the table of factorial values up to n. Because 
-     * most of the present applications use all factorial values up to n for
-     * calculations, it is more efficient to calculate them all.
+     * Calculates and populates the table of getFactorial values up to n.  
+     * Because most of the package applications use all getFactorial values up 
+     * to n for calculations, it is as efficient to calculate them all as it is 
+     * to calculate estimates for them all
      */
-    void calculate(int n) {
-        for(int j = 1; j<= n;j++){
-            if(!cache.containsKey(j))
-                cache.put(j,cache.get(j-1).multiply(BigInteger.valueOf(j)));
+    void init(int n) {
+        if(!cache.containsKey(n)){
+            System.out.println("Calculating Factorials...");
+            for(int j = 1; j<= n;j++){
+                if(!cache.containsKey(j))
+                    cache.put(j,cache.get(j-1).multiply(BigInteger.valueOf(j)));
+            }
+            System.out.println("Factorials finished. e.g. " + n + "! = " + getFactorial(n));
         }
     }
 }

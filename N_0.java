@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -55,7 +51,7 @@ public class N_0 implements Sequence {
         if (this.max < 16) {
             this.max = 16;
         }
-        this.qt = Q_ab.getInstance(ep);
+        this.qt = Q_ab.getInstance();
         this.ct = new C_0(time, ep);
     }
 

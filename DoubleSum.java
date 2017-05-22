@@ -7,11 +7,7 @@
  * 1, so double precision arithmetic is favored for speed with sufficient 
  * accuracy - 4 or 5 significant figures in the worst case. Some calculations
  * require very large number calculations in their constituent parts, which 
-<<<<<<< HEAD
  * represents a performance bottleneck if applied arbitrarily.  
-=======
- * represent a performance bottleneck if applied arbitrarily.  
->>>>>>> origin/master
  */
 package nestedsums;
 
@@ -81,18 +77,4 @@ public class DoubleSum {
                                     input.length));
         }
     }
-
-    /*
-     * not correct
-     *
-     public static double nestedCalculate(double[] input, int levels){
-     if(levels <= 1) {
-     return calculate(input);
-     } else {
-     return nestedCalculate(input,levels/2)
-     +
-     nestedCalculate(input,levels/2 + levels%2);
-     }
-     }
-     */
 }
