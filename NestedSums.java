@@ -14,7 +14,6 @@ package nestedsums;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.util.HashMap;
 
@@ -47,7 +46,11 @@ public class NestedSums {
             System.out.printf("%-3s %20s", round(t * ep.interval,1), temp);
             System.out.println();
         }
-        writeLEDataFile(ep, emap);
+        try{
+            writeLEDataFile(ep, emap);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -55,15 +58,17 @@ public class NestedSums {
      * state-reductive measurement times in sequence.
      * @param   ep  the entropy parameters of the system under investigation
      * @param   emap    the calculated linear entropy map with time(double) keys 
+     * @throws java.io.IOException 
      */
     public static void writeLEDataFile(EntropyParameters ep, HashMap<Double, LinearEntropy> emap) throws IOException {
         FileWriter fw = new FileWriter("lentropy_fieldA_nbar" + ep.alpha1sq
                 + "-" + ep.alpha2sq + "_0detected" + LocalTime.now().toString().replace(":","") + ".txt");
-        PrintWriter w = new PrintWriter(new BufferedWriter(fw));
-        for (int t = 0; t < ep.maxtime/ep.interval; t++) {
-            w.println((double) t * ep.interval + " " + emap.get((double) t * ep.interval).calculate());
+        try (BufferedWriter w = new BufferedWriter(fw)) {
+            for (int t = 0; t < ep.maxtime/ep.interval; t++) {
+                w.write(round((double) t * ep.interval,1) + " " + emap.get((double) t * ep.interval).calculate());
+                w.newLine();
+            }
         }
-        w.close();
     }
     
     public static double round (double value, int precision) {
