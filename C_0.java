@@ -14,7 +14,9 @@ package nestedsums;
 /**
  * The C0 coefficients based on two indices for a given time. In the simplest
  * case, the detuning parameter delta is 0 which does not involve any complex
- * algebra to evaluate.
+ * algebra to evaluate. When the detuining is not zero, complex algebra changes 
+ * the resulting coefficients, and for squared trace eventually resolves to a 
+ * real number.
  *
  * The Lai - Buzek - Knight paper describes C_0(na,nb,t), where Subscript[n, a]
  * and Subscript[n, b] are the summation indices. See [1] W.K. Lai, V. Buzek,
@@ -26,7 +28,7 @@ public class C_0 implements Sequence {
 
     EntropyParameters params; //Experimental conditions
     double time; //time at which the state-reductive measurement is made
-    double[][] terms;
+    Complex[][] terms;
 
     /**
      * C_0 constructor 
@@ -44,20 +46,39 @@ public class C_0 implements Sequence {
      * @author forest
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Complex getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
         //if the term is already calculated, fetch stored value
-        if (terms != null && terms[indices[0]][indices[1]] != 0.0) {
+        if (terms != null && terms[indices[0]][indices[1]] != null) {
             if (indices[1] < this.terms[0].length && indices[0] < this.terms.length) {
                 return terms[indices[0]][indices[1]];
             }
         }
         //if the term is not already calculated, calculate it
-        return oSquared2(indices[1]) / o2Squared(indices[0], indices[1])
+        double realC;
+        double imagC;
+        //With non-zero detuning
+        if(params.delta != 0.0){
+            realC = oSquared2(indices[1]) / o2Squared(indices[0], indices[1])
                 + oSquared2(indices[0] - 1) / o2Squared(indices[0], indices[1])
-                * (Math.cos(time * ot(indices[0], indices[1])));
+                * (Math.cos(time * ot(indices[0], indices[1]))*Math.sin((-1)*time*params.delta)
+                    + params.delta*(Math.sin(time * ot(indices[0], indices[1])))
+                     *(Math.cos(time*params.delta)*ot(indices[0], indices[1])));
+            imagC = oSquared2(indices[0] - 1) / o2Squared(indices[0], indices[1])
+                * (Math.cos(time * ot(indices[0], indices[1]))*Math.cos(time*params.delta)
+                   + params.delta*(Math.sin(time * ot(indices[0], indices[1])))
+                     *(Math.sin((-1)*params.delta)*ot(indices[0], indices[1])));
+        } 
+        //with zero detuning -> avoid dividing by zero, because coefficient is 0
+        else {
+            realC = oSquared2(indices[1]) / o2Squared(indices[0], indices[1])
+                    + oSquared2(indices[0] - 1) / o2Squared(indices[0], indices[1])
+                      * (Math.cos(time * ot(indices[0], indices[1])));
+            imagC = 0.0;
+        }
+        return new Complex(realC,imagC);
     }
 
     /**
@@ -68,7 +89,7 @@ public class C_0 implements Sequence {
      *                  is assumed to be {0,0}
      */
     public void calculate(int[] indices) {
-        terms = new double[indices[0]][indices[1]];
+        terms = new Complex[indices[0]][indices[1]];
         for (int i = 0; i < indices[0]; i++) {
             for (int j = 0; j < indices[1]; j++) {
                 terms[i][j] = getTerm(new int[]{i, j});
@@ -79,6 +100,7 @@ public class C_0 implements Sequence {
     /**
      * Omega factor calculated for first field at containing function index
      * @param   n   index position in the sequence of the containing function 
+     * @return  
      */
     public double oSquared1(int n) {
         return params.g12 * params.g12 * (n + 1);

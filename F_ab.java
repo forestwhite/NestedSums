@@ -27,16 +27,17 @@ public class F_ab implements Sequence {
     int max; //the maximum number of terms in the series to calculate any value
     BSingleton bt; //B_ab sequence for the time (see above) examined
     BSingleton bt_cnj; //B_ab conjugate sequence for the time examined
-    double[][] terms; //the individual series terms, not the final value
+    Complex[][] terms; //the individual series terms, not the final value
 
     /**
      * "raw" F_ab constructor 
+     * @param time
+     * @param max
      */
     public F_ab(double time, int max) {
         this.time = time; //scaled time of the state-reductive measurement
         this.max = max; //the number of summation terms to use
         this.bt = BSingleton.getInstance(); //B coefficient of the system
-        this.bt_cnj = this.bt;
     }
 
     /**
@@ -50,27 +51,26 @@ public class F_ab implements Sequence {
         if (this.max < 16) {
             this.max = 16;
         }
-         terms = new double[max][max];
+         terms = new Complex[max][max];
         this.bt = BSingleton.getInstance();
-        this.bt_cnj = this.bt;
     }
 
     /**
      * Optimized with memoization
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Complex getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
         //if the term is already calculated, fetch stored value
-        if (terms != null && terms[indices[0]][indices[1]] != 0.0) {
+        if (terms != null && terms[indices[0]][indices[1]] != null) {
             if (indices[1] < this.terms[0].length && indices[0] < this.terms.length) {
                 return terms[indices[0]][indices[1]];
             }
         }
         //if the term is not already calculated, calculate it
-        Series sum = new Series(new Bsq(indices), max, 1);
+        ComplexSeries sum = new ComplexSeries(new Bsq(indices), max, 1);
         return sum.calculate();
     }
 
@@ -91,10 +91,10 @@ public class F_ab implements Sequence {
          * Optimized with memoization
          */
         @Override
-        public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+        public Complex getTerm(int[] indices) throws IndexOutOfBoundsException {
             int[] aindices = new int[]{outerindices[0], indices[0]};
             int[] bindices = new int[]{outerindices[1], indices[0]};
-            return bt.getB(time, aindices)* bt_cnj.getB(time, bindices);
+            return bt.getB(time, aindices).prod(bt.getB(time, bindices).conj());
         }
     }
 
@@ -105,7 +105,6 @@ public class F_ab implements Sequence {
      *                table/matrix that define the range of terms to calculate 
      */
     public void calculate(int[] indices) {
-
         for (int i = indices[0]; i < indices[2]; i++) {
             for (int j = indices[1]; j < indices[3]; j++) {
                 terms[i][j] = getTerm(new int[]{i, j});

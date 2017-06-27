@@ -37,6 +37,8 @@ public class B_0 implements Sequence {
 
     /**
      * Encapsulated B_0 constructor
+     * @param time
+     * @param ep
      */
     public B_0(double time, EntropyParameters ep) {
         this.time = time;
@@ -51,7 +53,7 @@ public class B_0 implements Sequence {
      * Optimized with memoization
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
@@ -61,8 +63,8 @@ public class B_0 implements Sequence {
                 return terms[indices[0]][indices[1]];
             }
         }
-        //if the term is not already calculated, calculate it
-        return Math.pow(Math.abs(bt.getTerm(indices)), 2);
+        //if the term is not already calculated, calculate it, conjugate squared
+        return bt.getTerm(indices).prod(bt.getTerm(indices).conj());
     }
 
     /**

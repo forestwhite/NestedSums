@@ -13,7 +13,7 @@ package nestedsums;
 
 /**
  * two independent indices, time dependant, uses C0, Q-tilda = one t-dependant
- * value
+ * value. There result is real.
  *
  * @author forest
  */
@@ -59,7 +59,7 @@ public class N_0 implements Sequence {
      * Optimized with memoization
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
@@ -70,8 +70,9 @@ public class N_0 implements Sequence {
             }
         }
         //if the term is not already calculated, calculate it
-        return Math.pow(Math.abs(qt.getTerm(indices)), 2)
-                * Math.pow(Math.abs(ct.getTerm(indices)), 2);
+        double cSquared = ct.getTerm(indices).mod() * ct.getTerm(indices).conj().mod();
+        return Math.pow(Math.abs(qt.getTerm(indices).doubleValue()), 2)
+                * Math.abs(cSquared);
     }
 
     /**
@@ -83,9 +84,8 @@ public class N_0 implements Sequence {
     public double calculate() {
         if (result == null) {
             Series sum = new Series(this, max, 2);
-            return result = Math.sqrt(sum.calculate());
-        } else {
-            return result;
+            result = Math.sqrt(sum.calculate());
         }
+        return result;
     }
 }
