@@ -33,17 +33,19 @@ public class NestedSums {
 
     public static void main(String[] args) throws IOException {
         //Entropy field parameters: {delta, g12, g23, alpha1sq, alpha2sq, detectedstate, maxtime, interval}
-        double[] params = {0.0, 1.0, 1.0, 4.0, 4.0, 0.0, 30, 0.1};
+        double[] params = {50.0, 1.0, 1.0, 25.0, 25.0, 0.0, 50, 0.1};
         EntropyParameters ep = new EntropyParameters(params);
         BSingleton bs = BSingleton.getInstance();
         bs.init(ep); //Build B coefficient table
+        B_0 bcheck = new B_0(0.0,ep);
+        System.out.println("Normalization check: |B| squared is " + bcheck.calculate());
         HashMap<Double, LinearEntropy> emap = new HashMap<>();
         System.out.println("Calculating Linear Entropy for each increment " + ep.interval + " of scaled time");
         double temp;
         for (int t = 0; t < ep.maxtime/ep.interval; t++) {
             emap.put(t * ep.interval, new LinearEntropy(t * ep.interval, ep));
             temp = emap.get(t * ep.interval).calculate();
-            System.out.printf("%-3s %20s", round(t * ep.interval,1), temp);
+            System.out.printf("%-3s %16s", round(t * ep.interval,1), temp);
             System.out.println();
         }
         try{

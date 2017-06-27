@@ -47,7 +47,7 @@ class TrRoSquared implements Sequence {
      * Optimized with memoization
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
@@ -57,7 +57,9 @@ class TrRoSquared implements Sequence {
                 return terms[indices[0]][indices[1]];
             }
         }
-        return fl.getTerm(new int[]{indices[0], indices[1]}) * fl.getTerm(new int[]{indices[0], indices[1]});
+        Complex flConjugate = fl.getTerm(new int[]{indices[0], indices[1]}).conj();
+        Complex tro =  fl.getTerm(new int[]{indices[0], indices[1]}).prod(flConjugate);
+        return tro;
     }
 
     /**
@@ -68,7 +70,7 @@ class TrRoSquared implements Sequence {
     public double calculate() {
         for (int i = 0; i < max; i++) {
             for (int j = 0; j < max; j++) {
-                terms[i][j] = this.getTerm(new int[]{i, j});
+                terms[i][j] = this.getTerm(new int[]{i, j}).doubleValue();
             }
         }
         int[] indices = {0,0,max,max};

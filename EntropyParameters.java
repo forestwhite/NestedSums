@@ -54,7 +54,7 @@ public class EntropyParameters{
      *                          alpha1sq, alpha2sq, detectedstate} 
      */
     public EntropyParameters(double[] SharedParams){
-        this.delta = SharedParams[0];
+        this.delta = SharedParams[0]/2.0;
         this.g12 = SharedParams[1];
         this.g23 = SharedParams[2];
         this.alpha1sq = (int)SharedParams[3];

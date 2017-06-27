@@ -79,7 +79,7 @@ public class Q_ab implements Sequence{
      * Optimized with memoization
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
@@ -107,7 +107,7 @@ public class Q_ab implements Sequence{
     }
 
     /**
-     * Square Root calculator for BigDecimal using the Babylonian method.
+     * Square Root calculator for BigInteger using the Babylonian method.
      * @param   A       The base from which to calculate a square root. To get 
      *                  a good initial estimate, this must be an integer 
      * @param   SCALE   The minimum number binary digits of precision, as the 
@@ -134,40 +134,11 @@ public class Q_ab implements Sequence{
     private void calculate() {
         for (int i = 0; i < terms.length; i++) {
             for (int j = 0; j <= i; j++) {
-                terms[i][j] = getTerm(new int[]{i, j});
+                terms[i][j] = getTerm(new int[]{i, j}).doubleValue();
                 //Q-Tilda values are diagonally symetric
                 if(i != j)
                     terms[j][i] = terms [i][j];
             }
         }
-    } /*
-    
-    public void calculate(){
-        int threads = Runtime.getRuntime().availableProcessors();
-        ExecutorService service = Executors.newFixedThreadPool(threads);
-
-        List<Future<double[]>> futures = new ArrayList<>();
-        //Future<Double>[][] futures = new Future<Double>[terms.length][terms.length];
-        for (int i = 0; i < terms.length; i++) {
-                Q_abCalcThread callable = new Q_abCalcThread(i, this);
-                futures.add(service.submit(callable));
-        }
-        service.shutdown();
-        System.out.println("Calculating Q_ab coefficients");
-        for (int n = 0; n < terms.length; n++) {
-            try {
-                System.out.println(Arrays.toString(futures.get(n).get()));
-                for (int m = 0; m <= n; m++) {
-                    terms[n][m] = futures.get(n).get()[m];
-                }
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Q_ab.class.getName()).log(Level.SEVERE, ex.toString(), ex);
-            }
-                /*Q-Tilda values are diagonally symetric
-                if (n != m)
-                    terms[m][n] = terms[n][m];
-                
-        }
     }
-    */
 }

@@ -12,12 +12,15 @@
 package nestedsums;
 
 /**
- * Defines a generic series, which can also be a series term, supporting nested
- * summation.
+ * Defines a complex series, which can also be a series term, supporting nested
+ * summation and complex values. This is fundamentally different from 
+ * nestedsums.Series because the sum of complex numbers is not always resolved 
+ * with the modulus. ComplexSeries retains complex terms. It does not
+ * support concurrent divide-and-conquer efficiency, like ConcurrentSeries.
  *
  * @author forest
  */
-public class Series implements Sequence {
+public class ComplexSeries implements Sequence {
 
     private Sequence seriesterm; //the definition for a term of the series
     private int max; //max number of terms to sum
@@ -25,7 +28,7 @@ public class Series implements Sequence {
     private int[] indices; //indices to track nested terms under evaluation, in 
                            // reverse order, meaning index of outermost sum is 
                            // last and index of innermost sum is first
-    double value; //Result value for the series
+    Complex value; //Complex result value for the series
 
     /**
      * Constructor for 1D series, for which a definition of terms and the number
@@ -34,7 +37,7 @@ public class Series implements Sequence {
      * @param terms the series term definition, to generate series member values
      * @param max the number of terms to sum
      */
-    public Series(Sequence terms, int max) {
+    public ComplexSeries(Sequence terms, int max) {
         this(terms, max, 1);
     }
 
@@ -46,11 +49,12 @@ public class Series implements Sequence {
      * @param depth
      * @param outerindices
      */
-    public Series(Sequence terms, int max, int depth, int[] outerindices) {
+    public ComplexSeries(Sequence terms, int max, int depth, int[] outerindices) {
         this.seriesterm = terms;
         this.max = max;
         this.depth = depth;
         this.indices = outerindices;
+        this.value = new Complex(0.0,0.0);
     }
 
     /**
@@ -60,11 +64,12 @@ public class Series implements Sequence {
      * @param max the maximum index permitted at the current depth
      * @param depth
      */
-    public Series(Sequence terms, int max, int depth) {
+    public ComplexSeries(Sequence terms, int max, int depth) {
         this.seriesterm = terms;
         this.max = max;
         this.depth = depth;
         this.indices = new int[depth];
+        this.value = new Complex(0.0,0.0);
     }
 
     /**
@@ -73,33 +78,32 @@ public class Series implements Sequence {
      * @return the value of the series term
      */
     @Override
-    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Complex getTerm(int[] indices) throws IndexOutOfBoundsException {
         //check that number of indeces is less than depth
         if (indices.length > depth) {
             throw new IndexOutOfBoundsException();
         }
-        return seriesterm.getTerm(indices);
+        return (Complex)seriesterm.getTerm(indices);
     }
 
     /**
      * Calculates the series total. The efficiency of this solution is
-     * O(n^depth). Use ConcurrentSeries for a divide-and-conquer efficiency 
-     * algorithm.
+     * O(n^depth), so is not as efficient as ConcurrentSeries.
      *
      * @return the value of the series
      */
-    public double calculate() {
+    public Complex calculate() {
         for (int i = 0; i < max; i++) {
             //set index for the next term at current depth
             this.indices[this.depth - 1] = i;
             //if this is an outer series, calculate the inner series value
             //for all inner values and add to the current value
             if (depth != 1) {
-                Series inner = new Series(seriesterm, max, depth - 1, indices);
-                value += inner.calculate();
+                ComplexSeries inner = new ComplexSeries(seriesterm, max, depth - 1, indices);
+                value = value.add(inner.calculate());
             } // when the innermost sum is reached, sum the terms from 1 to max
             else {
-                value += seriesterm.getTerm(indices).doubleValue();
+                value = value.add((Complex)seriesterm.getTerm(indices));
             }
         }
         return value;

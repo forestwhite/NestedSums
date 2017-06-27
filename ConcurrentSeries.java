@@ -55,7 +55,7 @@ public class ConcurrentSeries extends RecursiveAction implements Sequence {
             invokeAll(new ConcurrentSeries(terms, indices1),
                       new ConcurrentSeries(terms, indices2));
         }
-        value += getTerm(Arrays.copyOfRange(indices,0,dimensions));
+        value += getTerm(Arrays.copyOfRange(indices,0,dimensions)).doubleValue();
     }
     
     /**
@@ -64,7 +64,7 @@ public class ConcurrentSeries extends RecursiveAction implements Sequence {
      * @return the value of the series term
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException {
         //check that number of indices is less than depth
         if (indices.length > dimensions << 2) {
             throw new IndexOutOfBoundsException();

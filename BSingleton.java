@@ -50,10 +50,10 @@ public class BSingleton {
      * @param   indices
      * @return  double  result
      */
-    public double getB(double time, int[] indices) {
+    public Complex getB(double time, int[] indices) {
         if(cache.containsKey(time))
             return cache.get(time).getTerm(indices);
         else
-            return Double.MIN_VALUE; 
+            return new Complex(Double.MIN_VALUE,0.0); 
     }
 }

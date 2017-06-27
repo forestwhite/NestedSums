@@ -23,5 +23,5 @@ public interface Sequence{
      * indeces indicates the number of dimensions in the sequence
      * @return the value of the sequence term
      */
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException;
+    public Number getTerm(int[] indices) throws IndexOutOfBoundsException;
 }

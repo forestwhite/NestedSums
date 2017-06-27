@@ -35,7 +35,7 @@ public class B_ab implements Sequence {
     Q_ab qt; //QTilda sequence for system under examination
     C_0 ct; //C_0 sequence for the time (see above) examined
     N_0 nt; //N_0 sequence for the time (see above) examined
-    double[][] terms;
+    Complex[][] terms;
 
     /*
      * Encapsulated B coefficient constructor
@@ -45,12 +45,13 @@ public class B_ab implements Sequence {
     public B_ab(double time, EntropyParameters ep) {
         this.time = time;
         this.qt = Q_ab.getInstance();
+        qt.init(ep);
         this.ct = new C_0(time, ep);
         this.nt = new N_0(time, ep);
         if (ep.alpha2sq * ep.alpha1sq < 16)
-            terms = new double[16][16];
+            terms = new Complex[16][16];
         else
-            terms = new double[ep.alpha2sq * ep.alpha1sq ][ep.alpha2sq * ep.alpha1sq ];
+            terms = new Complex[ep.alpha2sq * ep.alpha1sq ][ep.alpha2sq * ep.alpha1sq ];
     }
 
     /**
@@ -59,18 +60,20 @@ public class B_ab implements Sequence {
      * @author forest
      */
     @Override
-    public double getTerm(int[] indices) throws IndexOutOfBoundsException {
+    public Complex getTerm(int[] indices) throws IndexOutOfBoundsException {
         if (indices.length > 2) {
             throw new IndexOutOfBoundsException();
         }
         //if the term is already calculated, fetch stored value
-        if (terms != null && terms[indices[0]][indices[1]] != 0.0) {
+        if (terms != null && terms[indices[0]][indices[1]] != null) {
             if (indices[1] < this.terms[0].length && indices[0] < this.terms.length) {
                 return terms[indices[0]][indices[1]];
             }
         }
         //if the term is not already calculated, calculate it
-        return 1 / nt.calculate() * qt.getTerm(indices) * ct.getTerm(indices);
+        Complex coefficient = new Complex(1 / nt.calculate() 
+                * qt.getTerm(indices).doubleValue(), 0);
+        return ct.getTerm(indices).prod(coefficient);
     }
 
     /*
@@ -83,5 +86,4 @@ public class B_ab implements Sequence {
             }
         }
     }
-
 }
